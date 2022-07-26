@@ -1,13 +1,10 @@
 import express from "express";
 
-import { 
-  articleRender,
-  writeRender,
-} from "../controllers/index.js";
+import * as renderController from "../controllers/index.js";
 
 const router = express.Router();
 
-router.get("/", articleRender);
-router.get("/write", writeRender);
+router.get("/", renderController.articleRender);
+router.get("/write", renderController.writeRender);
 
 export default router;
