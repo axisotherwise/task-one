@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const connect = async () => {
   try {
     await mongoose.connect(
-      "mongodb://root:axisotherwise@localhost:27017/admin",
+      "mongodb://root:axisotherwise@3.35.123.192:27017/admin",
       {
         maxPoolSize: 50,
         wtimeoutMS: 2500,
