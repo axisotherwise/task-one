@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+</head>
+<body>
+  <h2>게시글 상세</h2>
+  <form action="/article/update" method="post">
+    <input type="hidden" value="{{ post[0]._id }}" name="id" class="id">
+    <div class="form-input">
+      <input type="text" name="title" value="{{ post[0].title }}">
+    </div>
+    <div class="form-input">
+      <input type="password" name="password" placeholder="작성 시 비밀번호 입력" class="password">
+    </div>
+    <div>
+      <textarea name="content" id="" cols="30" rows="10">{{ post[0].content }}</textarea>
+    </div>
+    <button>수정</button>
+  </form>
+  <button class="delete">삭제</button>
+  
+  <h2>후기 작성</h2>
+  <div>
+    <input type="text" name="comment" class="comment">
+    <button class="commentbtn">후기 작성</button>
+  </div>
+  <ul>
+    {% for postComment in postComments %}
+    <div>
+      <input type="hidden" value="{{ postComment._id }}" class="commentid">
+      <li><input type="text" value="{{ postComment.content }}" class="commentinput"></li>
+      <button class="commentupdate">수정</button>
+      <button class="commentdelete">삭제</button>
+    </div>
+    {% endfor %}
+  </ul>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+  const $postId = document.querySelector(".id");
+  const $password = document.querySelector(".password");
+  const $delete = document.querySelector(".delete");
+  const $comment = document.querySelector(".comment");
+  const $commentBtn = document.querySelector(".commentbtn");
+
+  $commentBtn.addEventListener("click", async function() {
+    try {
+      const content = $comment.value;
+      if (content.length <= 0) return alert("내용 입력");
+      const req = await axios.post("/comment/write", {
+        postId: $postId.value,
+        content,
+      });
+      const res = req.data.result;
+      if (res === "true") {
+        alert("write success");
+        location.href = `/article/${$postId.value}`;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+  $delete.addEventListener("click", async function() {
+    try {
+      const req = await axios.post(`/article/delete/${$postId.value}`, {
+        password: $password.value,
+      });
+      const res = req.data.result;
+      if (res === "false") return alert("비밀번호 불일치");
+      alert("delete success");
+      location.href ="/";
+    } catch (err) {
+      console.error(err);
+    }
+  });
+  document.querySelectorAll(".commentdelete").forEach(tag => {
+    tag.addEventListener("click", async function() {
+      const commentId = tag.parentNode.querySelector(".commentid");
+      const req = await axios.delete(`/comment/delete/${commentId.value}`);
+      const res = req.data.result;
+      if (res === "false") return alert("실패");
+      else {
+        alert("delete success");
+        location.href = `/article/${postId.value}`;
+      } 
+    });
+  });
+  document.querySelectorAll(".commentupdate").forEach(tag => {
+    tag.addEventListener("click", async function() {
+      const commentId = tag.parentNode.querySelector(".commentid");
+      const comment = tag.parentNode.querySelector(".commentinput");
+      const req = await axios.put(`/comment/update/${commentId.value}`, {
+        comment: comment.value,
+      });
+      const res = req.data.result;
+      if (res === "true") return alert("update success");
+    });
+  });
+</script>
+</body>
+</html>
